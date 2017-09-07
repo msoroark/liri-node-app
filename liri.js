@@ -1,6 +1,5 @@
 var key = require('./keys.js');
-var twitterAPI = require('twitter');
-var twitter = new twitterAPI(key);
+var Twitter = require('twitter');
 var Spotify = require('node-spotify-api');
 var spotify = new Spotify({
     id: '0a96c37f30e64742b3cbc6a6613ec197',
@@ -14,17 +13,22 @@ var fs = require('fs');
 var command = (process.argv[2]);
 
 if (command === "my-tweets") {
+    var client = new Twitter(key.twitterKeys);
+    var params = { screen_name: 'voncupcacon', count: 10 };
 
-    console.dir(twitter);
-    twitter.get('favorites/list', function(error, tweets, response) {
-        if(error) {
-            console.dir(error);
+    client.get('statuses/user_timeline', params, function(error, tweets, response) {
+
+        if (!error) {
+            var data = []; 
+            for (var i = 0; i < tweets.length; i++) {
+                data.push({
+                    'created at: ': tweets[i].created_at,
+                    'Tweets: ': tweets[i].text,
+                });
+            }
+            console.log(data);
         }
-        console.dir(tweets); // The favorites. 
-  
     });
-
-
 
 } else if (command === "spotify-this-song") {
 
@@ -41,7 +45,6 @@ if (command === "my-tweets") {
         .catch(function(err) {
             console.log(err);
         });
-
 
 
 } else if (command === "movie-this") {
